@@ -1,6 +1,6 @@
 export default {
   app: {
-    port: 'NODE_ENV',
+    port: 'NODE_PORT',
   },
   db: {
     uri: 'DB_URI',
