@@ -12,7 +12,5 @@
 ## Concepts
 
 - REST API endpoints
-  - CRUD
-  - HTTP methods
 - JWT & refresh tokens
 - Request validation
