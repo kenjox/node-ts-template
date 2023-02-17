@@ -13,8 +13,7 @@ export default class CustomError extends Error {
   // or programming
   public isOperational: boolean = true;
 
-  // Error status i.e 'fail' or 'error'
-  public status: string;
+  public status: string; // 'fail' | 'error' TODO: move to enum type
 
   public statusCode: number;
 
@@ -23,8 +22,5 @@ export default class CustomError extends Error {
 
     this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
     this.statusCode = statusCode || 500;
-
-    // Retaining stack in the custom error object
-    Error.captureStackTrace(this, this.constructor);
   }
 }

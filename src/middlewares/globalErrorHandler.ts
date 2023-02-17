@@ -1,3 +1,5 @@
+import 'dotenv/config';
+import config from 'config';
 import { Request, Response, NextFunction } from 'express';
 
 /**
@@ -5,25 +7,44 @@ import { Request, Response, NextFunction } from 'express';
  * Catches both operational and programming error thrown in the app
  */
 
-interface ErrorType {
-  statusCode: number;
-  status: string;
-  message: string;
-}
-
 const globalErrorHandler = (
-  error: ErrorType,
+  error: any,
   _req: Request,
   res: Response,
   next: NextFunction
 ) => {
   error.statusCode = error?.statusCode || 500;
   error.status = error?.status || 'error';
-  error.message = error?.message || 'Something went wrong. Try again later';
 
-  res
-    .status(error?.statusCode)
-    .json({ status: error?.status, message: error?.message });
+  // Check mode to determine which errors to display.
+  // Goal is to prevent leaking more details while in production
+
+  if (config.get<string>('mode.NODE_ENV') === 'development') {
+    res.status(error?.statusCode).json({
+      status: error?.status,
+      error,
+      message: error?.message,
+      stack: error?.stack,
+    });
+  } else {
+    // Check if error is operational (trusted)
+
+    if (error.isOperational) {
+      res.status(error?.statusCode).json({
+        status: error?.status,
+        message: error?.message,
+      });
+    } else {
+      // TODO: add customized production logger e.g winston, pino etc
+      console.error(error);
+
+      // Generic message and 500 status code
+      res.status(error?.statusCode).json({
+        status: 500,
+        message: 'Whooooops something went wrong. Try again later',
+      });
+    }
+  }
   next();
 };
 
