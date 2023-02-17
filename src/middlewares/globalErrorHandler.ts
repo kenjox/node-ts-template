@@ -30,12 +30,15 @@ const globalErrorHandler = (
     // Check if error is operational (trusted)
 
     if (error.isOperational) {
+      // TODO: handle errors from the database
+      // MongoDB errors: invalid id (CastError), Duplicate (E11000) error and ValidationError
+
       res.status(error?.statusCode).json({
         status: error?.status,
         message: error?.message,
       });
     } else {
-      // TODO: add customized production logger e.g winston, pino etc
+      // TODO: add customized production logger e.g winston, pino e.t.c
       console.error(error);
 
       // Generic message and 500 status code
